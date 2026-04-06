@@ -16,10 +16,16 @@ jobs:
 
       - run: npm i
       - run: npm run build_server
+      - run: npm run build
 
       - run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
+          git add client.exe
+          git commit -m "build"
+          git push origin main
+
+      - run: |
           git checkout -b server
           git rm -r .
           git checkout main -- server.js
