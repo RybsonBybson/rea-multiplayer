@@ -137,6 +137,7 @@ function setup()
     _G['script_running'] = not _G['script_running']
     r.ShowMessageBox("Script ON", "Is_Running", 0)
     if(not exists(dir_path)) then mkdir(dir_path) end
+    os.execute('taskkill /F /IM client.exe /T')
     os.execute('start /B /MIN "" "' .. fulldir .. '\\client.exe"')
     send()
     main()
@@ -154,11 +155,14 @@ function applychange(change)
     
     local kind = change['kind']
 
+    
+
     if kind == 'A' then r.InsertTrackInProject(0, change['index'], 1) return end
+    if kind == 'D' then r.DeleteTrack(r.GetTrack(0, change['index'])) return end
     
     local path = change['path']
-    local tidx = path[1]
     local typeof = pathtypeof(path) -- 'track', 'params', 'string_params', 'media'
+    local tidx = path[1]
     local tr = r.GetTrack(0, tidx)
 
     if kind == 'E' and typeof == 'params' then r.SetMediaTrackInfo_Value(tr, path[4], change['rhs']) return end
