@@ -186,7 +186,6 @@ function applychange(change)
     local kind = change['kind']
     local path = change['path']
     local tidx = path and path[1] or change['index']
-    r.ShowMessageBox(tidx, 'idx', 0)
     local tr = r.GetTrack(0, tidx)
     local typeof = path and pathtypeof(path) or false
 
