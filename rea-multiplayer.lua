@@ -55,16 +55,7 @@ function mediaparams(media)
     return data
 end
 
-function mediastrack(track)
-    local medias = {}
-    for media_index = 0, r.GetTrackNumMediaItems(track) - 1 do
-        local media = r.GetTrackMediaItem(track, media_index)
-        table.insert(medias, mediaparams(media))
-    end
-    return medias
-end
-
-function trackobj(track)
+function trackparams(track)
     local hasName, name = r.GetTrackName(track)
     local color = r.GetTrackColor(track)
     local cr, cg, cb = r.ColorFromNative(color)
@@ -72,7 +63,12 @@ function trackobj(track)
     local _, icon = reaper.GetSetMediaTrackInfo_String(track, "P_ICON", "", false)
     local hasIcon = icon ~= ""
     if hasIcon then icon = mp(icon) end
-    medias = mediastrack(track)
+
+    local medias = {}
+    for media_index = 0, r.GetTrackNumMediaItems(track) - 1 do
+        local media = r.GetTrackMediaItem(track, media_index)
+        table.insert(medias, mediaparams(media))
+    end
 
 
     return {
@@ -88,7 +84,7 @@ function scantracks()
     local tracks = {}
     for i = 0, amount - 1 do
         local track = r.GetTrack(0, i)
-        table.insert(tracks, trackobj(track))
+        table.insert(tracks, trackparams(track))
     end 
 
     return tracks
