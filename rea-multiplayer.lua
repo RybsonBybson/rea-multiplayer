@@ -164,9 +164,12 @@ function applychange(change)
     if kind == 'E' and typeof == 'string_params' then r.GetSetMediaTrackInfo_String(tr, path[3], change['rhs'], true) return end
 end
 
+local _applying = false
+
 function apply()
     local file = io.open(jslua_path, "r")
     if file then
+        _applying = true
         local data = json.decode(file:read("a"))
         file:close()
         if data then
@@ -177,6 +180,7 @@ function apply()
             local clear = io.open(jslua_path, "w")
             if clear then clear:write("") clear:close() end
         end
+        _applying = false
     end
 end
 
@@ -185,7 +189,9 @@ end
 function main()
     if not _G['script_running'] then return end
     apply()
-    send()
+    if not _applying then
+        send()
+    end
     r.defer(main)
 end
 

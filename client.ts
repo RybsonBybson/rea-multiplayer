@@ -24,7 +24,6 @@ let previousData = fj(LUAJS_PATH)?.data ?? {};
 
 socket.on("changes", (changes: Diff<any, any>[]) => {
   changes.forEach((change) => applyChange(previousData, previousData, change));
-
   fs.writeFileSync(JSLUA_PATH, JSON.stringify(changes));
 });
 
@@ -35,9 +34,8 @@ fs.watch(LUAJS_PATH, (event: string) => {
 
   const changes = diff(previousData, data.data);
 
-  // if (changes) console.log(changes);
   if (changes) {
-    console.log("PREVIOUS: ", previousData, "NOW: ", data.data);
+    console.log(changes);
     previousData = data.data;
     socket.emit("changes", changes);
   }
