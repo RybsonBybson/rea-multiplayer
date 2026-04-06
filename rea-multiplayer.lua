@@ -36,7 +36,6 @@ local luajs_path = dir_path .. "\\luajs.json"
 local jslua_path = dir_path .. "\\jslua.json"
 local resourcePath = parent(r.GetProjectPath())
 local fulldir = debug.getinfo(1, "S").source:match("^@(.*)[\\/][^\\/]+$")
-local _applying = false
 
 
 local scan_media_params = {
@@ -165,14 +164,12 @@ function applychange(change)
     if kind == 'E' and typeof == 'string_params' then r.GetSetMediaTrackInfo_String(tr, path[3], change['rhs'], true) return end
 end
 
-
 function apply()
     local file = io.open(jslua_path, "r")
     if file then
         local data = json.decode(file:read("a"))
         file:close()
-        if data and #data > 0 then
-            _applying = true
+        if data then
             for _, change in ipairs(data) do
                 applychange(change)
             end
@@ -185,15 +182,10 @@ end
 
 -- ############################################
 
-
 function main()
     if not _G['script_running'] then return end
-    if not _applying then
-        send()
-    else
-        _applying = false
-    end
     apply()
+    send()
     r.defer(main)
 end
 
