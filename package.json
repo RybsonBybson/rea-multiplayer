@@ -1,9 +1,9 @@
 {
   "type": "module",
   "scripts": {
-    "build": "npx esbuild client.ts --bundle --platform=node --outfile=dist/client.js & npx pkg dist/client.js --targets node18-win-x64 --output client.exe & rmdir /s /q dist",
+    "build": "npx esbuild client.ts --bundle --platform=node --outfile=dist/client.js & npx pkg dist/client.cjs --targets node18-win-x64 --output client.exe & rmdir /s /q dist",
     "dev": "npm run build & node server.ts",
-    "build_server": "npx esbuild server.ts --bundle --platform=node --outfile=server.js"
+    "build_server": "npx esbuild server.ts --bundle --platform=node --outfile=server.cjs"
   },
   "devDependencies": {
     "@types/deep-diff": "^1.0.5",
