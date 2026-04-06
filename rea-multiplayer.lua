@@ -132,6 +132,8 @@ end
 function setup()
     r.atexit(function ()
         os.execute('taskkill /F /IM client.exe /T')
+        local clear = io.open(jslua_path, "w")
+        if clear then clear:write("") clear:close() end
         r.ShowMessageBox("Script OFF", "Is_Running", 0)
     end)
     _G['script_running'] = not _G['script_running']
