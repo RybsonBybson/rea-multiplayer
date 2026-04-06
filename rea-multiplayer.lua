@@ -161,6 +161,10 @@ function setup()
     _G['script_running'] = not _G['script_running']
     r.ShowMessageBox("Script ON", "Is_Running", 0)
     if(not exists(dir_path)) then mkdir(dir_path) end
+
+    local file = io.open(comms_path, 'w')
+    if(file) then file:write(json.encode({applying=false})) end
+
     os.execute('taskkill /F /IM client.exe /T')
     os.execute('start /B /MIN "" "' .. fulldir .. '\\client.exe"')
     send()
