@@ -19,6 +19,7 @@ const fj = (p: string) => {
 
 const socket = io("http://localhost:3000");
 socket.on("connection", () => console.log("CONNECTED"));
+socket.on("connect_error", (err) => console.log("connect_error:", err.message));
 
 let previousData = fj(LUAJS_PATH)?.data ?? {};
 
