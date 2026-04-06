@@ -153,12 +153,16 @@ end
 
 function applychange(change)
     local kind = change['kind']
-
-    if kind == 'D' then r.DeleteTrack(r.GetTrack(0, change['index'])) return end
-    if kind == 'A' then r.InsertTrackInProject(0, change['index'], 1) return end
-    
     local path = change['path']
-    local typeof = pathtypeof(path) -- 'track', 'params', 'string_params', 'media'
+
+    if kind == 'A' and (not path or #path == 0) then 
+        r.InsertTrackInProject(0, change['index'], 1) return 
+    end
+    if kind == 'D' and (not path or #path == 0) then 
+        r.DeleteTrack(r.GetTrack(0, change['index'])) return 
+    end
+
+    local typeof = pathtypeof(path)
     local tidx = path[1]
     local tr = r.GetTrack(0, tidx)
 
