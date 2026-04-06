@@ -161,6 +161,9 @@ function setup()
     _G['script_running'] = not _G['script_running']
     r.ShowMessageBox("Script ON", "Is_Running", 0)
     if(not exists(dir_path)) then mkdir(dir_path) end
+    for _, changes_path in ipairs(getfiles(changes_dir)) do
+        os.remove(changes_path)
+    end
 
     local file = io.open(comms_path, 'w')
     if(file) then file:write(json.encode({applying=false})) file:close() end
@@ -182,16 +185,16 @@ end
 function applychange(change)
     local kind = change['kind']
     local path = change['path']
-    local idx = path and path[1] or change['index']
-    r.ShowMessageBox(idx, 'idx', 0)
-    local tr = r.GetTrack(0, idx)
+    local tidx = path and path[1] or change['index']
+    r.ShowMessageBox(tidx, 'idx', 0)
+    local tr = r.GetTrack(0, tidx)
     local typeof = path and pathtypeof(path) or false
 
     if kind == 'A' then
         local item = change['item']
         local item_kind = item['kind']
 
-        if item_kind == 'N' and not path then r.InsertTrackInProject(0, idx, 0) return end
+        if item_kind == 'N' and not path then r.InsertTrackInProject(0, tidx, 0) return end
         if item_kind == 'D' and not path then r.DeleteTrack(tr) return end
         if item_kind == 'N' and table.contains(path, 'medias') then r.AddMediaItemToTrack(tr) return end
         if item_kind == 'D' and table.contains(path, 'medias') then r.DeleteTrackMediaItem(tr, r.GetTrackMediaItem(tr, change['index'])) return end
