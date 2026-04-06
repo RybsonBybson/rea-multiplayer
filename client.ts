@@ -34,7 +34,7 @@ socket.on("changes", (changes: Diff<any, any>[]) => {
 fs.watch(LUAJS_PATH, (event: string) => {
   if (event !== "change") return;
   if (ignoreNext) return (ignoreNext = false);
-  
+
   const data = fj(LUAJS_PATH);
   if (!data) return;
 
