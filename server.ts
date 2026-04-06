@@ -4,9 +4,6 @@ const io = new Server(3000);
 
 io.on("connection", (socket) => {
   socket.on("changes", (data) => {
-    socket.emit("changes", data);
-    console.log(data);
-
-    // socket.broadcast.emit("changes", data);
+    socket.broadcast.emit("changes", data);
   });
 });
