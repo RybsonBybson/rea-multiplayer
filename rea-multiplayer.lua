@@ -184,10 +184,9 @@ function applychange(change)
     local path = change['path']
 
     if kind == 'A' and (not path or #path == 0) then 
-        r.InsertTrackInProject(0, change['index'], 0) return
-    end
-    if kind == 'D' and (not path or #path == 0) then 
-        r.DeleteTrack(r.GetTrack(0, change['index'])) return 
+        local item_kind = change['item']['kind']
+        if item_kind == 'N' then r.InsertTrackInProject(0, change['index'], 0) return end
+        if item_kind == 'D' then r.DeleteTrack(r.GetTrack(0, change['index'])) return end 
     end
 
     local typeof = pathtypeof(path)
