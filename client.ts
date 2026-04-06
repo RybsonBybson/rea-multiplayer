@@ -1,6 +1,6 @@
 import pkg, { Diff } from "deep-diff";
 const { diff, applyChange } = pkg;
-import fs from "fs";
+import fs from "fs-extra";
 import os from "os";
 import path from "path";
 import { io } from "socket.io-client";
@@ -26,8 +26,10 @@ let previousData = fj(STATE_PATH)?.data ?? {};
 
 socket.on("changes", (changes: Diff<any, any>[]) => {
   changes.forEach((change) => applyChange(previousData, previousData, change));
+  fs.ensureDirSync(CHANGES_DIR);
   fs.writeFileSync(path.join(CHANGES_DIR, `changes_${Date.now()}.json`), JSON.stringify(changes));
   fs.writeFileSync(COMMS_PATH, JSON.stringify({ applying: true }));
+  console.log("o kurwa leci");
 });
 
 fs.watch(STATE_PATH, (event: string) => {
