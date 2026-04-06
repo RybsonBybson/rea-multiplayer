@@ -150,19 +150,18 @@ function pathtypeof(path)
 end
 
 function applychange(change)
+    
+    local kind = change['kind']
+
+    if kind == 'A' then r.InsertTrackInProject(0, change['index'], 1) return end
+    
     local path = change['path']
     local tidx = path[1]
     local typeof = pathtypeof(path) -- 'track', 'params', 'string_params', 'media'
-    local kind = change['kind']
-
-    if kind == 'A' and typeof == 'track' then r.InsertTrackInProject(0, tidx, 1) return end
-
     local tr = r.GetTrack(0, tidx)
 
-    if kind == 'D' and typeof == 'track' then r.DeleteTrack(tr) return end
-    if kind == 'A' and typeof == 'params' then r.SetMediaTrackInfo_Value(tr, path[3], change['rhs']) return end
-    if kind == 'A' and typeof == 'string_params' then r.GetSetMediaTrackInfo_String(tr, path[3], change['rhs'], true) return end
-
+    if kind == 'E' and typeof == 'params' then r.SetMediaTrackInfo_Value(tr, path[3], change['rhs']) return end
+    if kind == 'E' and typeof == 'string_params' then r.GetSetMediaTrackInfo_String(tr, path[3], change['rhs'], true) return end
 end
 
 function apply()
