@@ -17,7 +17,7 @@ const fj = (p: string) => {
 };
 
 const socket = io("https://rea-multiplayer.onrender.com");
-socket.on("connection", () => console.log("CONNECTED"));
+socket.on("connect", () => console.log("CONNECTED"));
 socket.on("connect_error", (err) => console.log("connect_error:", err.message));
 
 let previousData = fj(LUAJS_PATH)?.data ?? {};

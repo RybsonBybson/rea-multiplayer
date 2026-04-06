@@ -20,6 +20,13 @@ function parent(path)
     end
 end
 
+function table.contains(t, value)
+    for _, v in ipairs(t) do
+        if v == value then return true end
+    end
+    return false
+end
+
 -- ############################################
 
 local json = require('dkjson')
@@ -38,7 +45,6 @@ local scan_media_params = {
     "D_FADEOUTDIR", "I_GROUPID", "I_CUSTOMCOLOR", "I_CURTAKE",
     "F_FREEMODE_Y", "F_FREEMODE_H", "I_FIXEDLANE"
 }
-
 local scan_track_params = {
     "B_MUTE", "B_PHASE", "I_SOLO", "B_SOLO_DEFEAT",
     "I_FXEN", "I_RECARM", "I_RECINPUT", "I_RECMODE",
@@ -134,11 +140,36 @@ function setup()
     main()
 end
 
+
+function pathtypeof(path)
+    if #path == 1 then return 'track' end
+    if #path == 4 and table.contains(path, "data") then return path[3] end
+    if table.contains(path, "medias") then return 'media' end
+end
+
+function applychange(change)
+    local path = change['path']
+    local tidx = path[1]
+    local typeof = pathtypeof(path) -- 'track', 'params', 'string_params', 'media'
+    local kind = change['kind']
+
+    if kind == 'A' and typeof == 'track' then r.InsertTrackInProject(0, tidx, 1) return end
+
+    local tr = r.GetTrack(0, tidx)
+
+    if kind == 'D' and typeof == 'track' then r.DeleteTrack(tr) return end
+    if kind == 'A' and typeof == 'params' then r.SetMediaTrackInfo_Value(tr, path[3], change['rhs']) return end
+    if kind == 'A' and typeof == 'string_params' then r.GetSetMediaTrackInfo_String(tr, path[3], change['rhs'], true) return end
+
+end
+
 function apply()
     local file = io.open(jslua_path, "r")
     if file then
         local data = json.decode(file:read("a"))
-        
+        for _, change in ipairs(data) do
+            applychange(change)
+        end
     end
 end
 
