@@ -145,7 +145,7 @@ end
 
 function pathtypeof(path)
     if #path == 1 then return 'track' end
-    if #path == 4 and table.contains(path, "data") then return path[2] end
+    if #path == 4 and table.contains(path, "data") then return path[3] end
     if table.contains(path, "medias") then return 'media' end
 end
 
@@ -160,8 +160,8 @@ function applychange(change)
     local typeof = pathtypeof(path) -- 'track', 'params', 'string_params', 'media'
     local tr = r.GetTrack(0, tidx)
 
-    if kind == 'E' and typeof == 'params' then r.SetMediaTrackInfo_Value(tr, path[3], change['rhs']) return end
-    if kind == 'E' and typeof == 'string_params' then r.GetSetMediaTrackInfo_String(tr, path[3], change['rhs'], true) return end
+    if kind == 'E' and typeof == 'params' then r.SetMediaTrackInfo_Value(tr, path[4], change['rhs']) return end
+    if kind == 'E' and typeof == 'string_params' then r.GetSetMediaTrackInfo_String(tr, path[4], change['rhs'], true) return end
 end
 
 local _applying = false
