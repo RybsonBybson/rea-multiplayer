@@ -1,9 +1,8 @@
 import pkg from "deep-diff";
-const { diff, applyChange } = pkg;
+const { diff } = pkg;
 import fs from "fs";
 import os from "os";
 import path from "path";
-import dgram from "dgram";
 import { io } from "socket.io-client";
 const DIR_PATH = path.join(os.tmpdir(), "rea-multiplayer");
 const LUAJS_PATH = path.join(DIR_PATH, "luajs.json");

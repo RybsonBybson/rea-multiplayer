@@ -21,10 +21,6 @@ jobs:
       - run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git rm -f client.exe || true
-          git add client.exe
-          git commit -m "build"
-          git push origin main
 
       - run: |
           git checkout -b server
