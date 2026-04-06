@@ -26,9 +26,9 @@ let previousData = fj(STATE_PATH)?.data ?? {};
 
 socket.on("changes", (changes: Diff<any, any>[]) => {
   console.log("CHANGES: ", changes);
-  console.log("before: ", previousData);
+  console.log("before: ", JSON.stringify(previousData, null, 2));
   changes.forEach((change) => applyChange(previousData, previousData, change));
-  console.log("after: ", previousData);
+  console.log("after: ", JSON.stringify(previousData, null, 2));
 
   fs.ensureDirSync(CHANGES_DIR);
   fs.writeFileSync(path.join(CHANGES_DIR, `changes_${Date.now()}.json`), JSON.stringify(changes));
