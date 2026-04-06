@@ -184,7 +184,8 @@ function applychange(change)
     local path = change['path']
 
     if kind == 'A' and (not path or #path == 0) then 
-        r.InsertTrackInProject(0, change['index'], 1) return 
+        r.InsertTrackInProject(0, change['index'], 1) 
+        r.DeleteTrack(r.GetTrack(0, change['index'])) return 
     end
     if kind == 'D' and (not path or #path == 0) then 
         r.DeleteTrack(r.GetTrack(0, change['index'])) return 
