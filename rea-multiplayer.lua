@@ -186,13 +186,15 @@ function applychange(change)
     if kind == 'A' then
         local index = change['index']
         local item = change['item']
-        local item_kind = item['item_kind']
+        local item_kind = item['kind']
         local tr = path and r.GetTrack(0, path[1]) or r.GetTrack(0, index)
 
         if item_kind == 'N' and not path then r.InsertTrackInProject(0, index, 0) return end
-        if item_kind == 'D' and not path then r.DeleteTrack(tr) return end 
+        if item_kind == 'D' and not path then r.DeleteTrack(tr) return end
         if item_kind == 'N' and table.contains(path, 'medias') then r.AddMediaItemToTrack(tr) return end
-        if item_kind == 'D' and table.contains(path, 'medias') then r.DeleteTrackMediaItem(tr, r.GetTrackMediaItem(tr, index)) return end 
+        if item_kind == 'D' and table.contains(path, 'medias') then r.DeleteTrackMediaItem(tr, r.GetTrackMediaItem(tr, index)) return end
+
+        return
     end
 
     local typeof = pathtypeof(path)
