@@ -16,7 +16,7 @@ const fj = (p: string) => {
   }
 };
 
-const socket = io("http://localhost:3000");
+const socket = io("https://rea-multiplayer.onrender.com");
 socket.on("connection", () => console.log("CONNECTED"));
 socket.on("connect_error", (err) => console.log("connect_error:", err.message));
 
