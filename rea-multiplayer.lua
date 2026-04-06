@@ -142,7 +142,8 @@ function setup()
     main()
 end
 
-
+-- track \ data \ params | string_params \ ex. P_NAME
+-- track \ medias \ ex. P_NAME
 function pathtypeof(path)
     if #path == 1 then return 'track' end
     if #path == 4 and table.contains(path, "data") then return path[3] end
