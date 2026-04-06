@@ -182,24 +182,21 @@ end
 function applychange(change)
     local kind = change['kind']
     local path = change['path']
+    local idx = path and path[1] or change['index']
+    local tr = path and r.GetTrack(0, path[1]) or r.GetTrack(0, idx)
+    local typeof = path and pathtypeof(path) or false
 
     if kind == 'A' then
-        local index = change['index']
         local item = change['item']
         local item_kind = item['kind']
-        local tr = path and r.GetTrack(0, path[1]) or r.GetTrack(0, index)
 
-        if item_kind == 'N' and not path then r.InsertTrackInProject(0, index, 0) return end
+        if item_kind == 'N' and not path then r.InsertTrackInProject(0, idx, 0) return end
         if item_kind == 'D' and not path then r.DeleteTrack(tr) return end
         if item_kind == 'N' and table.contains(path, 'medias') then r.AddMediaItemToTrack(tr) return end
-        if item_kind == 'D' and table.contains(path, 'medias') then r.DeleteTrackMediaItem(tr, r.GetTrackMediaItem(tr, index)) return end
+        if item_kind == 'D' and table.contains(path, 'medias') then r.DeleteTrackMediaItem(tr, r.GetTrackMediaItem(tr, idx)) return end
 
         return
     end
-
-    local typeof = pathtypeof(path)
-    local tidx = path[1]
-    local tr = r.GetTrack(0, tidx)
 
     if kind == 'E' and typeof == 'params' then r.SetMediaTrackInfo_Value(tr, path[4], change['rhs']) return end
     if kind == 'E' and typeof == 'string_params' then r.GetSetMediaTrackInfo_String(tr, path[4], change['rhs'], true) return end
