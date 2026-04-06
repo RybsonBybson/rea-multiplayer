@@ -184,8 +184,7 @@ function applychange(change)
     local path = change['path']
 
     if kind == 'A' and (not path or #path == 0) then 
-        r.InsertTrackInProject(0, change['index'], 1) 
-        r.DeleteTrack(r.GetTrack(0, change['index'])) return 
+        r.InsertTrackInProject(0, change['index'], 0) return
     end
     if kind == 'D' and (not path or #path == 0) then 
         r.DeleteTrack(r.GetTrack(0, change['index'])) return 
@@ -199,7 +198,10 @@ function applychange(change)
     if kind == 'E' and typeof == 'string_params' then r.GetSetMediaTrackInfo_String(tr, path[4], change['rhs'], true) return end
 end
 
+local _applying = false
+
 function apply()
+    _applying = true
     for _, changes_path in ipairs(getfiles(changes_dir)) do
         local file = io.open(changes_path, 'r')
         if file then
@@ -219,6 +221,8 @@ function apply()
         file:write(json.encode(comms))
         file:close()
     end
+
+    _applying = false
 end
 
 -- ############################################
@@ -227,8 +231,8 @@ function main()
     if not _G['script_running'] then return end
     local comms = fj(comms_path)
 
-    if comms and comms['applying'] then apply()
-    elseif comms then send() end
+    if comms and comms['applying'] and not _applying then apply()
+    elseif comms and not _applying then send() end
 
     r.defer(main)
 end

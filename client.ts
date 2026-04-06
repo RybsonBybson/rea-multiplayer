@@ -25,7 +25,10 @@ socket.on("connect_error", (err) => console.log("connect_error:", err.message));
 let previousData = fj(STATE_PATH)?.data ?? {};
 
 socket.on("changes", (changes: Diff<any, any>[]) => {
+  console.log("before: ", previousData);
   changes.forEach((change) => applyChange(previousData, previousData, change));
+  console.log("after: ", previousData);
+
   fs.ensureDirSync(CHANGES_DIR);
   fs.writeFileSync(path.join(CHANGES_DIR, `changes_${Date.now()}.json`), JSON.stringify(changes));
   fs.writeFileSync(COMMS_PATH, JSON.stringify({ applying: true }));
