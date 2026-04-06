@@ -1,3 +1,6 @@
+local json = require('dkjson')
+local r = reaper
+
 function mkdir(path)
     os.execute('mkdir "' .. path .. '" 2>nul')
 end
@@ -20,6 +23,18 @@ function parent(path)
     end
 end
 
+function getfiles(folder)
+    local files = {}
+    local handle = io.popen('dir "' .. folder .. '" /b /a-d')
+    if handle then
+        for file in handle:lines() do
+            files[#files + 1] = folder .. "\\" .. file
+        end
+        handle:close()
+    end
+    return files
+end
+
 function table.contains(t, value)
     for _, v in ipairs(t) do
         if v == value then return true end
@@ -27,13 +42,22 @@ function table.contains(t, value)
     return false
 end
 
+function fj(p)
+    local f = io.open(p, "r")
+    if f then
+        return json.decode(f:read("a"))
+    end
+    return false
+end
+
+
 -- ############################################
 
-local json = require('dkjson')
-local r = reaper
+
 local dir_path = os.getenv("TEMP") .. "\\rea-multiplayer"
-local luajs_path = dir_path .. "\\luajs.json"
-local jslua_path = dir_path .. "\\jslua.json"
+local state_path = dir_path .. "\\state.json"
+local changes_dir = dir_path .. "\\changes"
+local comms_path = dir_path .. "\\comms.json"
 local resourcePath = parent(r.GetProjectPath())
 local fulldir = debug.getinfo(1, "S").source:match("^@(.*)[\\/][^\\/]+$")
 
@@ -121,7 +145,7 @@ end
 
 
 function send()
-    local file = io.open(luajs_path, "w")
+    local file = io.open(state_path, "w")
     if file then
         local data = json.encode({project_path = r.GetProjectPath(), data = scantracks()})
         file:write(data)
@@ -132,8 +156,6 @@ end
 function setup()
     r.atexit(function ()
         os.execute('taskkill /F /IM client.exe /T')
-        local clear = io.open(jslua_path, "w")
-        if clear then clear:write("") clear:close() end
         r.ShowMessageBox("Script OFF", "Is_Running", 0)
     end)
     _G['script_running'] = not _G['script_running']
@@ -172,23 +194,24 @@ function applychange(change)
     if kind == 'E' and typeof == 'string_params' then r.GetSetMediaTrackInfo_String(tr, path[4], change['rhs'], true) return end
 end
 
-local _applying = false
-
 function apply()
-    local file = io.open(jslua_path, "r")
-    if file then
-        _applying = true
-        local data = json.decode(file:read("a"))
-        file:close()
-        if data then
+    for _, changes_path in ipairs(getfiles(changes_dir)) do
+        local file = io.open(changes_path, 'r')
+        if file then
+            local data = json.decode(file:read("a"))
+            file:close()
             for _, change in ipairs(data) do
                 applychange(change)
             end
-
-            local clear = io.open(jslua_path, "w")
-            if clear then clear:write("") clear:close() end
+            os.remove(changes_path)
         end
-        _applying = false
+    end
+
+    local comms = fj(comms_path)
+    comms['applying'] = false;
+    local file = io.open(comms_path, 'w')
+    if file then
+        file:write(json.encode(comms))
     end
 end
 
@@ -196,10 +219,11 @@ end
 
 function main()
     if not _G['script_running'] then return end
-    apply()
-    if not _applying then
-        send()
-    end
+    local comms = fj(comms_path)
+
+    if comms and comms['applying'] then apply()
+    elseif comms then send() end
+
     r.defer(main)
 end
 
