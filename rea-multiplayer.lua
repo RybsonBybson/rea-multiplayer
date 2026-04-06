@@ -130,6 +130,7 @@ end
 
 function setup()
     r.atexit(function ()
+        os.execute('taskkill /F /IM client.exe /T')
         r.ShowMessageBox("Script OFF", "Is_Running", 0)
     end)
     _G['script_running'] = not _G['script_running']
