@@ -1,5 +1,5 @@
-import pkg from "deep-diff";
-const { diff } = pkg;
+import pkg, { Diff } from "deep-diff";
+const { diff, applyChange } = pkg;
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -22,7 +22,8 @@ socket.on("connect_error", (err) => console.log("connect_error:", err.message));
 
 let previousData = fj(LUAJS_PATH)?.data ?? {};
 
-socket.on("changes", (changes) => {
+socket.on("changes", (changes: Diff<any, any>[]) => {
+  changes.forEach((change) => applyChange(previousData, previousData, change));
   fs.writeFileSync(JSLUA_PATH, JSON.stringify(changes));
 });
 
