@@ -168,11 +168,16 @@ function apply()
     local file = io.open(jslua_path, "r")
     if file then
         local data = json.decode(file:read("a"))
-        for _, change in ipairs(data) do
-            applychange(change)
+        file:close()
+        if data then
+            for _, change in ipairs(data) do
+                applychange(change)
+            end
         end
-    file:close()
     end
+
+    local clear = io.open(jslua_path, "w")
+    if clear then clear:write("") clear:close() end
 end
 
 -- ############################################
