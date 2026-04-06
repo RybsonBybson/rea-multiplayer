@@ -25,6 +25,7 @@ socket.on("connect_error", (err) => console.log("connect_error:", err.message));
 let previousData = fj(STATE_PATH)?.data ?? {};
 
 socket.on("changes", (changes: Diff<any, any>[]) => {
+  console.log("CHANGES: ", changes);
   console.log("before: ", previousData);
   changes.forEach((change) => applyChange(previousData, previousData, change));
   console.log("after: ", previousData);
@@ -32,13 +33,13 @@ socket.on("changes", (changes: Diff<any, any>[]) => {
   fs.ensureDirSync(CHANGES_DIR);
   fs.writeFileSync(path.join(CHANGES_DIR, `changes_${Date.now()}.json`), JSON.stringify(changes));
   fs.writeFileSync(COMMS_PATH, JSON.stringify({ applying: true }));
-  console.log("o kurwa leci");
 });
 
 fs.watch(STATE_PATH, (event: string) => {
   if (event !== "change") return;
+
   const comms = fj(COMMS_PATH);
-  if (!comms || comms.applying) return console.log("i chuj");
+  if (!comms || comms.applying) return;
 
   const data = fj(STATE_PATH);
   if (!data) return;
