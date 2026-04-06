@@ -173,11 +173,11 @@ function apply()
             for _, change in ipairs(data) do
                 applychange(change)
             end
+
+            local clear = io.open(jslua_path, "w")
+            if clear then clear:write("") clear:close() end
         end
     end
-
-    local clear = io.open(jslua_path, "w")
-    if clear then clear:write("") clear:close() end
 end
 
 -- ############################################
