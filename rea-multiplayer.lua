@@ -39,6 +39,26 @@ local scan_media_params = {
     "F_FREEMODE_Y", "F_FREEMODE_H", "I_FIXEDLANE"
 }
 
+local scan_track_params = {
+    "B_MUTE", "B_PHASE", "I_SOLO", "B_SOLO_DEFEAT",
+    "I_FXEN", "I_RECARM", "I_RECINPUT", "I_RECMODE",
+    "I_RECMODE_FLAGS", "I_RECMON", "I_RECMONITEMS",
+    "B_AUTO_RECARM", "I_VUMODE", "I_AUTOMODE", "I_NCHAN",
+    "I_SELECTED", "I_FOLDERDEPTH", "I_FOLDERCOMPACT",
+    "I_MIDIHWOUT", "I_MIDI_INPUT_CHANMAP", "I_MIDI_CTL_CHAN",
+    "I_MIDI_TRACKSEL_FLAG", "I_PERFFLAGS", "I_CUSTOMCOLOR",
+    "I_HEIGHTOVERRIDE", "I_SPACER", "B_HEIGHTLOCK",
+    "D_VOL", "D_PAN", "D_WIDTH", "D_DUALPANL", "D_DUALPANR",
+    "I_PANMODE", "D_PANLAW", "I_PANLAW_FLAGS",
+    "B_SHOWINMIXER", "B_SHOWINTCP", "B_TCPPIN",
+    "B_MAINSEND", "I_FREEMODE", "I_NUMFIXEDLANES",
+    "C_BEATATTACHMODE", "I_PLAY_OFFSET_FLAG", "D_PLAY_OFFSET"
+}
+local scan_track_string_params = {
+    "P_NAME", "P_ICON", "P_MCP_LAYOUT", "P_TCP_LAYOUT",
+    "P_RAZOREDITS", "P_RAZOREDITS_EXT"
+}
+
 -- ############################################
 
 function mp(path)
@@ -56,13 +76,13 @@ function mediaparams(media)
 end
 
 function trackparams(track)
-    local hasName, name = r.GetTrackName(track)
-    local color = r.GetTrackColor(track)
-    local cr, cg, cb = r.ColorFromNative(color)
-    local hasColor = color ~= 0
-    local _, icon = reaper.GetSetMediaTrackInfo_String(track, "P_ICON", "", false)
-    local hasIcon = icon ~= ""
-    if hasIcon then icon = mp(icon) end
+    data = {params = {}, string_params = {}}
+    for _, param in ipairs(scan_track_params) do
+        data.params[param] = r.GetMediaTrackInfo_Value(track, param)
+    end
+    for _, string_param in ipairs(scan_track_string_params) do
+        data.string_params[string_param] = r.GetSetMediaTrackInfo_String(track, string_param, "", false)
+    end
 
     local medias = {}
     for media_index = 0, r.GetTrackNumMediaItems(track) - 1 do
@@ -72,9 +92,7 @@ function trackparams(track)
 
 
     return {
-        nameData = {hasName = hasName, name = name},
-        colorData = {hasColor = hasColor, r = cr, g = cg, b = cb},
-        iconData = {hasIcon = hasIcon, icon = icon},
+        data = data,
         medias = medias
     }
 end

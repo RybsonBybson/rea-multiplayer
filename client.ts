@@ -23,9 +23,7 @@ let previousData = fj(LUAJS_PATH)?.data ?? {};
 let localData = {};
 
 socket.on("changes", (changes) => {
-  changes.forEach((change: any) => applyChange(localData, {}, change));
-
-  fs.writeFileSync(JSLUA_PATH, JSON.stringify(localData));
+  fs.writeFileSync(JSLUA_PATH, JSON.stringify(changes));
 });
 
 fs.watch(LUAJS_PATH, (event: string) => {
