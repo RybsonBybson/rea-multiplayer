@@ -144,7 +144,7 @@ end
 
 function pathtypeof(path)
     if #path == 1 then return 'track' end
-    if #path == 4 and table.contains(path, "data") then return path[3] end
+    if #path == 4 and table.contains(path, "data") then return path[2] end
     if table.contains(path, "medias") then return 'media' end
 end
 
@@ -171,6 +171,7 @@ function apply()
         for _, change in ipairs(data) do
             applychange(change)
         end
+    file:close()
     end
 end
 
