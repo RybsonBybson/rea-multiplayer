@@ -152,13 +152,10 @@ function pathtypeof(path)
 end
 
 function applychange(change)
-    
     local kind = change['kind']
 
-    
-
-    if kind == 'A' then r.InsertTrackInProject(0, change['index'], 1) return end
     if kind == 'D' then r.DeleteTrack(r.GetTrack(0, change['index'])) return end
+    if kind == 'A' then r.InsertTrackInProject(0, change['index'], 1) return end
     
     local path = change['path']
     local typeof = pathtypeof(path) -- 'track', 'params', 'string_params', 'media'
