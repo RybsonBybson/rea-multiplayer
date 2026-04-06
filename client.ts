@@ -33,8 +33,10 @@ fs.watch(LUAJS_PATH, (event: string) => {
   if (!data) return;
 
   const changes = diff(previousData, data.data);
-  previousData = data.data;
 
   // if (changes) console.log(changes);
-  if (changes) socket.emit("changes", changes);
+  if (changes) {
+    previousData = data.data;
+    socket.emit("changes", changes);
+  }
 });
