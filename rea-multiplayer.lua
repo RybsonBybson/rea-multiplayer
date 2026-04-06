@@ -163,7 +163,7 @@ function setup()
     if(not exists(dir_path)) then mkdir(dir_path) end
 
     local file = io.open(comms_path, 'w')
-    if(file) then file:write(json.encode({applying=false})) end
+    if(file) then file:write(json.encode({applying=false})) file:close() end
 
     os.execute('taskkill /F /IM client.exe /T')
     os.execute('start /B /MIN "" "' .. fulldir .. '\\client.exe"')
@@ -216,6 +216,7 @@ function apply()
     local file = io.open(comms_path, 'w')
     if file then
         file:write(json.encode(comms))
+        file:close()
     end
 end
 
