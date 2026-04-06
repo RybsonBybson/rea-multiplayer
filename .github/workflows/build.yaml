@@ -1,0 +1,26 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - run: npm i
+      - run: npm run build_server
+
+      - run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git checkout -b server
+          git add server.js
+          git commit -m "build"
+          git push origin server --force
