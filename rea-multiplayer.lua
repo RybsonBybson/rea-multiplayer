@@ -168,7 +168,6 @@ function setup()
     local file = io.open(comms_path, 'w')
     if(file) then file:write(json.encode({applying=false})) file:close() end
 
-    os.execute('taskkill /F /IM client.exe /T')
     os.execute('start /B /MIN "" "' .. fulldir .. '\\client.exe"')
     send()
     main()
