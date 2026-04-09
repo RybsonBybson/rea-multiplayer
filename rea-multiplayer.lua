@@ -23,6 +23,17 @@ function parent(path)
     end
 end
 
+math.randomseed(os.time())
+function uuid()
+    return string.format('%x%x-%x-%x-%x-%x%x',
+        math.random(0, 0xffff), math.random(0, 0xffff),
+        math.random(0, 0xffff),
+        math.random(0x4000, 0x4fff),
+        math.random(0x8000, 0xbfff),
+        math.random(0, 0xffff), math.random(0, 0xffff)
+    )
+end
+
 function getfiles(folder)
     local files = {}
     local handle = io.popen('dir "' .. folder .. '" /b /a-d')
@@ -54,7 +65,8 @@ end
 -- ############################################
 
 
-local dir_path = os.getenv("TEMP") .. "\\rea-multiplayer"
+local session_id = uuid()
+local dir_path = os.getenv("TEMP") .. "\\rea-multiplayer-" .. session_id
 local state_path = dir_path .. "\\state.json"
 local changes_dir = dir_path .. "\\changes"
 local comms_path = dir_path .. "\\comms.json"
@@ -168,7 +180,7 @@ function setup()
     local file = io.open(comms_path, 'w')
     if(file) then file:write(json.encode({applying=false})) file:close() end
 
-    os.execute('start /B /MIN "" "' .. fulldir .. '\\client.exe"')
+    os.execute('start /B /MIN "" "' .. fulldir .. '\\client.exe" "' .. session_id .. '"')
     send()
     main()
 end

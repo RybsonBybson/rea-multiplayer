@@ -4,8 +4,11 @@ import fs from "fs-extra";
 import os from "os";
 import path from "path";
 import { io } from "socket.io-client";
+import fm from "./filemanager";
 
-const DIR_PATH = path.join(os.tmpdir(), "rea-multiplayer");
+const fileManager = new fm();
+const sessionId = process.argv[2];
+const DIR_PATH = path.join(os.tmpdir(), `rea-multiplayer-${sessionId}`);
 const STATE_PATH = path.join(DIR_PATH, "state.json");
 const CHANGES_DIR = path.join(DIR_PATH, "changes");
 const COMMS_PATH = path.join(DIR_PATH, "comms.json");
@@ -31,7 +34,10 @@ socket.on("changes", (changes: Diff<any, any>[]) => {
   console.log("after: ", JSON.stringify(previousData, null, 2));
 
   fs.ensureDirSync(CHANGES_DIR);
-  fs.writeFileSync(path.join(CHANGES_DIR, `changes_${Date.now()}.json`), JSON.stringify(changes));
+  fs.writeFileSync(
+    path.join(CHANGES_DIR, `changes_${Date.now()}.json`),
+    JSON.stringify(changes),
+  );
   fs.writeFileSync(COMMS_PATH, JSON.stringify({ applying: true }));
 });
 
