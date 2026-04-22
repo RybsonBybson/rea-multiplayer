@@ -79,7 +79,7 @@ local scan_media_params = {
     "B_UISEL", "C_LOCK", "D_VOL", "D_POSITION", "D_LENGTH",
     "D_SNAPOFFSET", "D_FADEINLEN", "D_FADEOUTLEN", "D_FADEINDIR",
     "D_FADEOUTDIR", "I_GROUPID", "I_CUSTOMCOLOR", "I_CURTAKE",
-    "F_FREEMODE_Y", "F_FREEMODE_H", "I_FIXEDLANE"
+    -- "F_FREEMODE_Y", "F_FREEMODE_H", "I_FIXEDLANE"
 }
 local scan_track_params = {
     "B_MUTE", "B_PHASE", "I_SOLO", "B_SOLO_DEFEAT",
@@ -94,7 +94,8 @@ local scan_track_params = {
     "D_VOL", "D_PAN", "D_WIDTH", "D_DUALPANL", "D_DUALPANR",
     "I_PANMODE", "D_PANLAW", "I_PANLAW_FLAGS",
     "B_SHOWINMIXER", "B_SHOWINTCP", "B_TCPPIN",
-    "B_MAINSEND", "I_FREEMODE", "I_NUMFIXEDLANES",
+    "B_MAINSEND", "I_FREEMODE",  
+    -- "I_NUMFIXEDLANES",
     "C_BEATATTACHMODE", "I_PLAY_OFFSET_FLAG", "D_PLAY_OFFSET"
 }
 local scan_track_string_params = {
@@ -110,10 +111,19 @@ function mp(path)
     return resourcePath .. '/' .. path
 end
 
+
+
 function mediaparams(media)
     local data = {}
     for _, param in ipairs(scan_media_params) do
         data[param] = r.GetMediaItemInfo_Value(media, param)
+    end
+    local take = r.GetMediaItemTake(media, 0)
+    if take then
+        local source = r.GetMediaSourceFileName(r.GetMediaItemTake_Source(take))
+        if source then
+            data["SOURCE"] = source:gsub(resourcePath .. "/", "")
+        end
     end
     return data
 end
@@ -206,7 +216,11 @@ function applychange(change)
 
         if item_kind == 'N' and not path then r.InsertTrackInProject(0, tidx, 0) return end
         if item_kind == 'D' and not path then r.DeleteTrack(tr) return end
-        if item_kind == 'N' and table.contains(path, 'medias') then r.AddMediaItemToTrack(tr) return end
+        if item_kind == 'N' and table.contains(path, 'medias') then 
+            local media_item = r.AddMediaItemToTrack(tr)
+            for k, v in pairs(item["rhs"]) do r.SetMediaItemInfo_Value(media_item, k, v) end
+            return
+            end
         if item_kind == 'D' and table.contains(path, 'medias') then r.DeleteTrackMediaItem(tr, r.GetTrackMediaItem(tr, change['index'])) return end
 
         return
@@ -214,6 +228,11 @@ function applychange(change)
 
     if kind == 'E' and typeof == 'params' then r.SetMediaTrackInfo_Value(tr, path[4], change['rhs']) return end
     if kind == 'E' and typeof == 'string_params' then r.GetSetMediaTrackInfo_String(tr, path[4], change['rhs'], true) return end
+    if kind == 'E' and typeof == 'media' then
+        local item = r.GetTrackMediaItem(tr, path[3])
+        r.SetMediaItemInfo_Value(item, path[4], change['rhs'])
+        return
+    end
 end
 
 local _applying = false
