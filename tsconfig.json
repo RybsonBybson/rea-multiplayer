@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node"],
+    "allowImportingTsExtensions": true
   }
 }
